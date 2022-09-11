@@ -1,11 +1,12 @@
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static int[] prices = {50, 100, 250};
     public static String[] products = {"Хлеб", "Молоко", "Сыр"};
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         Scanner scanner = new Scanner(System.in);
 
@@ -20,11 +21,9 @@ public class Main {
         int[] oldProductsCount;
         int sum = 0;
 
-        Basket basket = new Basket(prices, products);
-        basket = Basket.loadFromTxtFile(new File("basket.txt"));
+        Basket basket;
 
-
-
+        basket = Basket.loadFromBinFile(new File("basket.bin"));
 
 
         while (true) {
@@ -78,7 +77,7 @@ public class Main {
             }
         }
 
-        basket.saveTxt(new File("basket.txt"));
+        basket.saveBin(new File("basket.bin"));
         System.out.println("Ваша корзина: ");
         basket.printCart();
     }

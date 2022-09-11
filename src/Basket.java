@@ -1,10 +1,12 @@
+import javax.naming.Name;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Basket{
+public class Basket implements Serializable{
+    private static final long serialVersionUID = 37L;
 
     private int[] prices;
     private String[] nameOfPrices;
@@ -46,15 +48,13 @@ public class Basket{
     }
 
     public void saveTxt(File textFile) {
-        try {
-            if (textFile.exists()) {
-                saveWithCodeClean(textFile);
-            } else if (textFile.createNewFile()) {
-                saveWithCodeClean(textFile);
+        try (BufferedWriter fw = new BufferedWriter(new FileWriter(textFile))) {
+            for (String s : strings) {
+                fw.append(s);
             }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            fw.flush();
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 
@@ -82,18 +82,50 @@ public class Basket{
         }
     }
 
+    public static Basket loadFromBinFile(File file) throws IOException {
+        ListToBin listToBin = null;
+        Basket basket = new Basket(Main.prices, Main.products);
+        if (file.exists()) {
+            try (FileInputStream fis = new FileInputStream(file);
+                 ObjectInputStream ois = new ObjectInputStream(fis)) {
+
+                listToBin = (ListToBin) ois.readObject();
+                List<String> stringList = listToBin.getStrings();
+                System.out.println(stringList);
+                for (int i = 0; i < stringList.size(); i++) {
+                    String[] elements = stringList.get(i).split(" ");
+                    for (int y = 0; y < Main.products.length; y++) {
+                        if (Main.products[y].equals(elements[0])) {
+                            basket.addToCart(y, Integer.parseInt(elements[1]));
+                        }
+                    }
+                }
+
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.println(e);
+            }
+        } else {
+            file.createNewFile();
+        }
+        return basket;
+    }
+
     public List<String> getBasketArray() {
         return strings;
     }
 
-    private void saveWithCodeClean(File file) {
-        try (BufferedWriter fw = new BufferedWriter(new FileWriter(file))) {
-            for (String s : strings) {
-                fw.append(s);
-            }
-            fw.flush();
+    public void saveBin(File file) {
+        try (FileOutputStream fos = new FileOutputStream(file);
+            ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+
+            ListToBin listToBin = new ListToBin(strings);
+            oos.writeObject(listToBin);
+
         } catch (Exception e) {
             System.out.println(e);
         }
+
     }
+
+
 }
