@@ -1,0 +1,19 @@
+{
+  "array": [
+    {
+      "amount": "2",
+      "price": "50",
+      "name": "Bread",
+      "sum": "100",
+      "productNumber": 0
+    },
+    {
+      "amount": "5",
+      "price": "250",
+      "name": "Cheese",
+      "sum": "1250",
+      "productNumber": 2
+    }
+  ],
+  "name": "basket"
+}
